@@ -1,5 +1,5 @@
 class EntriesController < ApplicationController
-  before_action :set_entry, only: [:show, :edit, :update, :destroy]
+  before_action :set_entry, only: [:show, :edit, :update, :destroy, :like, :unlike, :share]
 
   # GET /entries
   # GET /entries.json
@@ -15,17 +15,17 @@ class EntriesController < ApplicationController
   # GET /entries/new
   def new
     if !session[:user]
-      redirect_to entries_path, :alert => "You have to log in to create a new tweet "
+      redirect_to entries_path, :alert => "You have to log in to create a new entry "
     else
         @entry = Entry.new
-end
+    end
   end
 
   # GET /entries/1/edit
   def edit
     @entry = Entry.find(params[:id])
     if @entry.user.name != session[:user]
-      redirect_to entries_path, :alert => "You cannot edit another user’s tweet!"
+      redirect_to entries_path, :alert => "You cannot edit another user’s entries!"
     else
       @entry = Entry.find(params[:id])
     end
@@ -36,10 +36,11 @@ end
   def create
     @entry = Entry.new(entry_params)
     @entry.user = User.find_by name: session[:user]
+    @entry.likes = 0
 
     respond_to do |format|
       if @entry.save
-        format.html { redirect_to entries_url, notice: 'Tweet was successfully created.' }
+        format.html { redirect_to entries_url, notice: 'Entry was successfully created.' }
         format.json { render :show, status: :created, location: @entry }
       else
         format.html { render :new }
@@ -65,15 +66,57 @@ end
   # DELETE /entries/1
   # DELETE /entries/1.json
   def destroy
-    if @tweet.user != session[:user]
-      redirect_to entries_url, :alert => "You cannot delete another user’s tweet!"
+    if @entry.user.name != session[:user]
+      redirect_to entries_url, :alert => "You cannot delete another user’s Entry!"
     else
-    respond_to do |format|
-      format.html { redirect_to entries_url, notice: 'Entry was successfully destroyed.' }
-      format.json { head :no_content }
+      @entry.destroy
+      respond_to do |format|
+        format.html { redirect_to entries_url, notice: 'Entry was successfully destroyed.' }
+        format.json { head :no_content }
+      end
     end
   end
 
+  def share
+    text = @entry.user.name + ": " + @entry.text 
+    @entryShared = Entry.create(user: User.where(name: session[:user]).first, text: text, likes: 0)
+
+    respond_to do |format|
+      if @entryShared.save
+        format.html { redirect_to entries_url, notice: 'Entry was successfully created.' }
+        format.json { render :show, status: :created, location: @entryShared }
+      else
+        format.html { render :new }
+        format.json { render json: @entryShared.errors, status: :unprocessable_entity }
+      end
+    end
+
+
+  end
+
+  def like
+    @entry.likes = @entry.likes + 1
+    if @entry.save
+        redirect_to entries_url, notice: 'Like registered' 
+    else
+      render :new         
+    end
+  end 
+
+  def unlike
+    if @entry.likes > 0 
+      @entry.likes = @entry.likes - 1
+      if @entry.save
+        redirect_to entries_url, notice: 'Like registered' 
+      else
+        render :new         
+    end
+    else
+      redirect_to entries_url, notice: 'You can not unlike a 0 like entry' 
+    end
+    
+  end 
+    
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_entry
@@ -85,4 +128,4 @@ end
       params.require(:entry).permit(:text, :user_id, :likes)
     end
   end
-end
+

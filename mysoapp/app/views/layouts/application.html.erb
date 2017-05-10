@@ -11,7 +11,8 @@
         <div class="user_nav">
             <% if session[:user] %>
                 Logged in as <%= session[:user] %>.
-                <%= link_to "My Friends", myfriends_path %>
+                <%= link_to "Init", entries_path %>
+                <%= link_to "Relations", myfriends_path %>
                 <%= link_to "Users", users_path %>
                 <%= link_to "Log out", logout_path %>
             <% else %>

@@ -1,10 +1,10 @@
 class RelationsController < ApplicationController
-  before_action :set_relation, only: [:show, :edit, :update, :destroy]
+  before_action :set_relation, only: [:show, :edit, :update, :destroy, :accept]
 
   # GET /relations
   # GET /relations.json
   def index
-    @relations = Relation.all.where(user1_id: User.where(name: session[:user]).first)
+    @relations = Relation.all
   end
 
   # GET /relations/1
@@ -24,7 +24,7 @@ class RelationsController < ApplicationController
   # GET /relations/1/edit
   def edit
     @relation = relation.find(params[:id])
-    if @relation.user1.name != session[:user]
+    if @relation.user1_id.name != @currentUser.name or @currentUser.role != 0
       redirect_to entries_path, :alert => "You cannot edit another user’s relations!"
     else
       @relation = Relation.find(params[:id])
@@ -67,7 +67,7 @@ class RelationsController < ApplicationController
   # DELETE /relations/1
   # DELETE /relations/1.json
   def destroy
-    if @relation.user2_id = User.where(name: session[:user]).first
+    if @relation.user1_id == @currentUser.id or @currentUser.role == 0
       @relation.destroy
       respond_to do |format|
         format.html { redirect_to relations_url, notice: 'Relation was successfully destroyed.' }
@@ -80,7 +80,7 @@ class RelationsController < ApplicationController
   
 
   def query
-    @relation = Relation.create(user1_id: User.where(name: session[:user]).first, user2_id: User.where(id: params[:id]).first, status: 0)
+    @relation = Relation.create(user1_id: (User.where(name: session[:user]).first).id, user2_id: params[:id], status: 0)
    
     respond_to do |format|
       if @relation.save
@@ -94,15 +94,20 @@ class RelationsController < ApplicationController
   end
 
   def accept
-   if @relation.status = 0
-     @relation.status = 1
-      if @entry.save
-          redirect_to entries_url, notice: 'Relation acepted' 
+
+    if @relation.user2_id == @currentUser.id or @currentUser.role == 0
+      if @relation.status == 0
+        @relation.status = 1
+        if @relation.save
+          redirect_to relations_url, notice: 'Relation acepted' 
+        else
+          render :new         
+        end
       else
-        render :new         
+        redirect_to relations_url, notice: 'Relation already acepted'
       end
     else
-      redirect_to entries_url, notice: 'Relation already acepted'
+      redirect_to relations_url, notice: 'You cant accept this relation'
     end
   end 
 
@@ -111,6 +116,7 @@ class RelationsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_relation
       @relation = Relation.find(params[:id])
+      @currentUser = User.where(name: session[:user]).first
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

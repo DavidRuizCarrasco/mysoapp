@@ -24,7 +24,7 @@ class EntriesController < ApplicationController
   # GET /entries/1/edit
   def edit
     @entry = Entry.find(params[:id])
-    if @entry.user.name != session[:user]
+    if @entry.user.name != session[:user] or @entry.user.role != 0
       redirect_to entries_path, :alert => "You cannot edit another user’s entries!"
     else
       @entry = Entry.find(params[:id])
@@ -66,7 +66,7 @@ class EntriesController < ApplicationController
   # DELETE /entries/1
   # DELETE /entries/1.json
   def destroy
-    if @entry.user.name != session[:user]
+    if @entry.user.name != session[:user] or @entry.user.role != 0
       redirect_to entries_url, :alert => "You cannot delete another user’s Entry!"
     else
       @entry.destroy

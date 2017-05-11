@@ -22,7 +22,7 @@ class RelationsController < ApplicationController
   # GET /relations/new
   def new
     if !session[:user]
-      redirect_to relations_path, :alert => "You have to log in to create a new entry "
+      redirect_to relations_path, :alert => "You have to log in to create a new relation"
     else
         @relation = Relation.new
     end
@@ -32,7 +32,7 @@ class RelationsController < ApplicationController
   def edit
     @relation = relation.find(params[:id])
     if @relation.user1_id.name != @currentUser.name or @currentUser.role != 0
-      redirect_to entries_path, :alert => "You cannot edit another user’s relations!"
+      redirect_to entries_path, :alert => "You cannot edit another user relation!"
     else
       @relation = Relation.find(params[:id])
     end

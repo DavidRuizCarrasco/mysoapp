@@ -29,7 +29,7 @@ class EntriesController < ApplicationController
   # GET /entries/new
   def new
     if !session[:user]
-      redirect_to entries_path, :alert => "You have to log in to create a new entry "
+      redirect_to entries_path, :alert => "You have to log in to create a new entry"
     else
         @entry = Entry.new
     end
@@ -39,7 +39,7 @@ class EntriesController < ApplicationController
   def edit
     @entry = Entry.find(params[:id])
     if @entry.user.name != session[:user] or @entry.user.role != 0
-      redirect_to entries_path, :alert => "You cannot edit another user’s entries!"
+      redirect_to entries_path, :alert => "You cannot edit another user entry!"
     else
       @entry = Entry.find(params[:id])
     end
@@ -81,7 +81,7 @@ class EntriesController < ApplicationController
   # DELETE /entries/1.json
   def destroy
     if @entry.user.name != session[:user] or @entry.user.role != 0
-      redirect_to entries_url, :alert => "You cannot delete another user’s Entry!"
+      redirect_to entries_url, :alert => "You cannot delete another user Entry!"
     else
       @entry.destroy
       respond_to do |format|
@@ -97,7 +97,7 @@ class EntriesController < ApplicationController
 
     respond_to do |format|
       if @entryShared.save
-        format.html { redirect_to entries_url, notice: 'Entry was successfully created.' }
+        format.html { redirect_to entries_url, notice: 'Entry was successfully shared.' }
         format.json { render :show, status: :created, location: @entryShared }
       else
         format.html { render :new }
@@ -119,7 +119,7 @@ class EntriesController < ApplicationController
     if @entry.likes > 0 
       @entry.likes = @entry.likes - 1
       if @entry.save
-        redirect_to entries_url, notice: 'Like registered' 
+        redirect_to entries_url, notice: 'Unlike registered' 
       else
         render :new         
     end

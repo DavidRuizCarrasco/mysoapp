@@ -4,7 +4,7 @@
   <strong>Name:</strong>
   <%= @user.name %>
 </p>
-
+<% if (User.where(name: session[:user]).first).role == 0 or @user.name == session[:user] %>
 <p>
   <strong>Password:</strong>
   <%= @user.password %>
@@ -14,7 +14,7 @@
   <strong>Role:</strong>
   <%= @user.role %>
 </p>
-
+<% end %>
 <p>
   <strong>Email:</strong>
   <%= @user.email %>

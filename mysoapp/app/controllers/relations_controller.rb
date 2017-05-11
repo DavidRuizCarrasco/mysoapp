@@ -4,7 +4,14 @@ class RelationsController < ApplicationController
   # GET /relations
   # GET /relations.json
   def index
-    @relations = Relation.all
+    if session[:user] != nil
+      if (User.where(name: session[:user]).first).role != 0 
+        me = User.where(name: session[:user]).first
+        @relations = Relation.where('user1_id = ? OR user2_id = ?', me, me)
+      else
+        @relations = Relation.all
+      end
+    end
   end
 
   # GET /relations/1
@@ -35,10 +42,12 @@ class RelationsController < ApplicationController
   # POST /relations.json
   def create
     @relation = Relation.new(relation_params)
-    @relation.user1_id = (User.where(name: session[:user]).first).id
-    @relation.user2_id = (User.where(name: @relation.user2_id).first).id
-    @relation.status = 0
-
+    name1 = @relation.user1_id
+    name2 = @relation.user2_id
+    user1 = User.where(name: name1).first
+    user2 = User.where(name: name2).first
+    @relation = Relation.create(user1_id: user1.id, user2_id: user2.id, status: 0)
+    
     respond_to do |format|
       if @relation.save
         format.html { redirect_to @relation, notice: 'Relation was successfully created.' }

@@ -24,16 +24,12 @@
         <% end %>
         <td><%= link_to 'Accept', accept_path(relation.id) %></td>
         <td><%= link_to 'Deny', deny_path(relation.id) %></td>
-        <td><%= link_to 'Revoke', revoke_path(relation.id) %></td>
+        <td><%= link_to 'Revoke', revoke_path(relation.id), data: { confirm: 'Are you sure?' } %></td>
         <td><%= link_to 'Show', relation %></td>
-        <td><%= link_to 'Edit', edit_relation_path(relation) %></td>
-        <td><%= link_to 'Destroy', relation, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
 
 <br>
-<% if (User.where(name: session[:user]).first).role == 0 %>
-  <%= link_to 'New Relation', new_relation_path %>
-<% end %>
+

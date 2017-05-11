@@ -4,7 +4,21 @@ class EntriesController < ApplicationController
   # GET /entries
   # GET /entries.json
   def index
-    @entries = Entry.all
+    if session[:user] != nil
+      if (User.where(name: session[:user]).first).role != 0 
+        friends = Array.new
+        friendships = Relation.where(user1_id: User.where(name: session[:user]).first , status: 1)
+        if friendships != nil
+          for friendship in friendships
+            friends.push(friendship.user2_id)
+          end
+        end
+        friends.push((User.where(name: session[:user]).first).id)
+        @entries = Entry.where('user_id IN (?)',friends)
+      else
+        @entries = Entry.all
+      end
+    end
   end
 
   # GET /entries/1

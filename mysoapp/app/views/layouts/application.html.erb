@@ -10,11 +10,11 @@
     <div id="container">
         <div class="user_nav">
             <% if session[:user] %>
-                Logged in as <%= session[:user] %>.
-                <%= link_to "Init", entries_path %>
+                <div>Logged in as <%= session[:user] %>.</div>
+                <div><%= link_to "Init", entries_path %>
                 <%= link_to "Relations", myfriends_path %>
                 <%= link_to "Users", users_path %>
-                <%= link_to "Log out", logout_path %>
+                <%= link_to "Log out", logout_path %></div>
             <% else %>
                 <%= link_to "Sign up", signup_path %> or
                 <%= link_to "log in", login_path %>.

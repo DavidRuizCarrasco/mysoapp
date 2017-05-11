@@ -1,5 +1,5 @@
 class RelationsController < ApplicationController
-  before_action :set_relation, only: [:show, :edit, :update, :destroy, :accept]
+  before_action :set_relation, only: [:show, :edit, :update, :destroy, :accept, :deny]
 
   # GET /relations
   # GET /relations.json
@@ -108,6 +108,22 @@ class RelationsController < ApplicationController
       end
     else
       redirect_to relations_url, notice: 'You cant accept this relation'
+    end
+  end 
+
+  def deny
+    if @relation.user2_id == @currentUser.id or @currentUser.role == 0
+      if @relation.status == 0
+        @relation.destroy
+        respond_to do |format|
+          format.html { redirect_to relations_url, notice: 'Relation was denied.' }
+          format.json { head :no_content }
+        end
+      else
+        redirect_to relations_url, notice: 'Relation already acepted'
+      end
+    else
+      redirect_to relations_url, notice: 'You cant deny this relation'
     end
   end 
 

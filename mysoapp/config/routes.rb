@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   get "sendQuery/:id" => "relations#query", :as => "sendQuery"
   get "accept/:id" => "relations#accept", :as => "accept"
   get "revoke/:id" => "relations#destroy", :as => "revoke"
+  get "deny/:id" => "relations#deny", :as => "deny"
   get "users" => "users#index", :as => "users"
   resources :users
   resources :session

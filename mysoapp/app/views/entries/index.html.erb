@@ -5,26 +5,32 @@
 <table>
   <thead>
     <tr>
+    <% if session[:user] != nil %>
       <th>Text</th>
       <th>User</th>
       <th>Likes</th>
       <th colspan="3"></th>
+    <% else %>
+      <th>LOG IN to see your friends entries</th>
+    <% end %>
     </tr>
   </thead>
 
   <tbody>
-    <% @entries.each do |entry| %>
-      <tr>
-        <td><%= entry.text %></td>
-        <td><%= entry.user.name %></td>
-        <td><%= entry.likes %></td>
-        <td><%= link_to 'Show', entry %></td>
-        <td><%= link_to 'Share', share_path(entry.id) %></td>
-        <td><%= link_to 'Like', like_path(entry.id) %></td>
-        <td><%= link_to 'Unlike', unlike_path(entry.id) %></td>
-        <td><%= link_to 'Edit', edit_entry_path(entry) %></td>
-        <td><%= link_to 'Destroy', entry, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
+    <% if session[:user] != nil %>
+      <% @entries.each do |entry| %>
+        <tr>
+          <td><%= entry.text %></td>
+          <td><%= entry.user.name %></td>
+          <td><%= entry.likes %></td>
+          <td><%= link_to 'Show', entry %></td>
+          <td><%= link_to 'Share', share_path(entry.id) %></td>
+          <td><%= link_to 'Like', like_path(entry.id) %></td>
+          <td><%= link_to 'Unlike', unlike_path(entry.id) %></td>
+          <td><%= link_to 'Edit', edit_entry_path(entry) %></td>
+          <td><%= link_to 'Destroy', entry, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
     <% end %>
   </tbody>
 </table>
